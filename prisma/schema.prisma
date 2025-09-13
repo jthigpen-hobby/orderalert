@@ -30,3 +30,13 @@ model Session {
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
 }
+
+model AppSettings {
+  id                String   @id @default(cuid())
+  shop              String   @unique
+  orderThreshold    Float    @default(100.0)
+  emailRecipient    String   @default("")
+  isEnabled         Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
