@@ -15,6 +15,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };
 };
 
+
 export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
 

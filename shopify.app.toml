@@ -2,12 +2,13 @@
 
 client_id = "8434e1eb877f13ccd6559598b06c3aee"
 name = "order-alerts"
-application_url = "https://example.com/"
+application_url = "https://iso-ought-document-proceeds.trycloudflare.com"
 embedded = true
 handle = "order-alerts-7"
 
 [build]
 include_config_on_deploy = true
+automatically_update_urls_on_dev = true
 
 [webhooks]
 api_version = "2025-07"
@@ -29,7 +30,7 @@ api_version = "2025-07"
 scopes = "write_products,read_orders"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = ["https://iso-ought-document-proceeds.trycloudflare.com/auth/callback", "https://iso-ought-document-proceeds.trycloudflare.com/auth/shopify/callback", "https://iso-ought-document-proceeds.trycloudflare.com/api/auth/callback"]
 
 [pos]
 embedded = false

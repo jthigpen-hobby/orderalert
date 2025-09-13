@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData, useActionData, useNavigation } from "@remix-run/react";
+import { useLoaderData, useNavigation, useFetcher } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -11,7 +11,6 @@ import {
   BlockStack,
   TextField,
   Checkbox,
-  Banner,
   InlineStack,
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
@@ -44,9 +43,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const { session } = await authenticate.admin(request);
   const formData = await request.formData();
   
-  const orderThreshold = parseFloat(formData.get("orderThreshold") as string);
-  const emailRecipient = formData.get("emailRecipient") as string;
+  const orderThreshold = parseFloat(formData.get("orderThreshold") as string) || 100;
+  const emailRecipient = (formData.get("emailRecipient") as string) || "";
   const isEnabled = formData.get("isEnabled") === "on";
+
+  console.log("Settings update:", { shop: session.shop, orderThreshold, emailRecipient, isEnabled });
 
   // Update or create app settings
   await db.appSettings.upsert({
@@ -67,16 +68,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return redirect("/app");
 };
 
+
 export default function Index() {
   const { settings } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
-  const navigation = useNavigation();
+  const fetcher = useFetcher();
   
   const [orderThreshold, setOrderThreshold] = useState(settings.orderThreshold.toString());
   const [emailRecipient, setEmailRecipient] = useState(settings.emailRecipient);
   const [isEnabled, setIsEnabled] = useState(settings.isEnabled);
   
-  const isSubmitting = navigation.state === "submitting";
+  const isSubmitting = fetcher.state === "submitting";
 
   return (
     <Page>
@@ -94,20 +95,15 @@ export default function Index() {
                 </Text>
               </BlockStack>
 
-              {actionData && (
-                <Banner tone="success">
-                  Settings saved successfully!
-                </Banner>
-              )}
 
-              <form method="post">
+              <fetcher.Form method="post">
                 <BlockStack gap="400">
                   <Checkbox
                     label="Enable order alerts"
                     checked={isEnabled}
                     onChange={setIsEnabled}
-                    name="isEnabled"
                   />
+                  <input type="hidden" name="isEnabled" value={isEnabled ? "on" : ""} />
 
                   <TextField
                     label="Order threshold ($)"
@@ -143,7 +139,7 @@ export default function Index() {
                     </Button>
                   </InlineStack>
                 </BlockStack>
-              </form>
+              </fetcher.Form>
             </BlockStack>
           </Card>
         </Layout.Section>

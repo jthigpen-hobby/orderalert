@@ -63,7 +63,7 @@ Order Details:
 Top 3 Items:
 ${topItems}
 
-Order Link: https://${process.env.SHOPIFY_SHOP_DOMAIN || 'your-store'}.myshopify.com/admin/orders/${order.id.split('/').pop()}
+Order Link: https://${process.env.SHOPIFY_SHOP_DOMAIN || 'your-store'}.myshopify.com/admin/orders/${order.id}
 
 This order exceeds your configured threshold of ${currency} ${threshold.toFixed(2)}.
   `.trim();
